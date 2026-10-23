@@ -45,8 +45,8 @@ android {
         }
         create("prod") {
             dimension = "environment"
-            buildConfigField("String", "API_BASE_URL", "\"https://TU-BACKEND.onrender.com/\"")
-            buildConfigField("String", "WS_URL", "\"wss://TU-BACKEND.onrender.com/ws\"")
+            buildConfigField("String", "API_BASE_URL", "\"https://nexopay-backend-xnr5.onrender.com/\"")
+            buildConfigField("String", "WS_URL", "\"wss://nexopay-backend-xnr5.onrender.com/ws\"")
         }
     }
 

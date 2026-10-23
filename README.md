@@ -7,7 +7,7 @@ Repositorio backend: `https://github.com/30621-srvillegas/nexopay-backend`
 ## Demo
 
 - APK release: `https://github.com/30621-srvillegas/nexopay-android/releases`
-- Backend: `<RENDER_URL>`
+- Backend: `https://nexopay-backend-xnr5.onrender.com`
 - Video: pendiente
 
 ## Cuentas de prueba
@@ -53,7 +53,7 @@ Android <- WSS (ticket de un solo uso) <- Fastify
 .\gradlew.bat assembleProdRelease
 ```
 
-El flavor `prod` requiere reemplazar `<RENDER_URL>` por la URL real del backend en `app/build.gradle.kts` antes de generar el APK final.
+El flavor `prod` requiere reemplazar `https://nexopay-backend-xnr5.onrender.com` por la URL real del backend en `app/build.gradle.kts` antes de generar el APK final.
 
 ## Probar
 
