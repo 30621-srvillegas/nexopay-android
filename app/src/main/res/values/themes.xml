@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.NexoPay" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/nexo_primary</item>
+        <item name="colorOnPrimary">@color/nexo_on_primary</item>
+        <item name="colorPrimaryContainer">@color/nexo_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/nexo_on_primary_container</item>
+        <item name="colorSecondary">@color/nexo_secondary</item>
+        <item name="colorOnSecondary">@color/nexo_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/nexo_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/nexo_on_secondary_container</item>
+        <item name="colorSurface">@color/nexo_surface</item>
+        <item name="colorOnSurface">@color/nexo_on_surface</item>
+        <item name="colorSurfaceVariant">@color/nexo_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/nexo_on_surface_variant</item>
+        <item name="colorOutline">@color/nexo_outline</item>
+        <item name="colorError">@color/nexo_danger</item>
+        <item name="colorOnError">@color/nexo_on_primary</item>
+        <item name="android:colorBackground">@color/nexo_background</item>
+        <item name="android:windowBackground">@color/nexo_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/nexo_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+    </style>
+
+    <style name="Theme.NexoPay.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/nexo_primary</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_wallet</item>
+        <item name="windowSplashScreenAnimationDuration">300</item>
+        <item name="postSplashScreenTheme">@style/Theme.NexoPay</item>
+    </style>
+
+</resources>

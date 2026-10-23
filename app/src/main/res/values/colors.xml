@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="nexo_primary">#006B5B</color>
+    <color name="nexo_on_primary">#FFFFFF</color>
+    <color name="nexo_primary_container">#9CF2E2</color>
+    <color name="nexo_on_primary_container">#00201A</color>
+    <color name="nexo_primary_dark">#00453A</color>
+
+    <color name="nexo_secondary">#4B635D</color>
+    <color name="nexo_on_secondary">#FFFFFF</color>
+    <color name="nexo_secondary_container">#CDE8E1</color>
+    <color name="nexo_on_secondary_container">#08201B</color>
+
+    <color name="nexo_background">#F7FAF8</color>
+    <color name="nexo_surface">#F7FAF8</color>
+    <color name="nexo_on_surface">#171D1B</color>
+    <color name="nexo_surface_variant">#DBE5E1</color>
+    <color name="nexo_on_surface_variant">#3F4946</color>
+    <color name="nexo_outline">#6F7976</color>
+    <color name="nexo_card">#FFFFFF</color>
+
+    <color name="nexo_success">#0F7B4F</color>
+    <color name="nexo_success_container">#D7F5E3</color>
+    <color name="nexo_on_success_container">#00210F</color>
+    <color name="nexo_danger">#B3261E</color>
+    <color name="nexo_danger_container">#FFDAD6</color>
+    <color name="nexo_on_danger_container">#410002</color>
+    <color name="nexo_warning">#7A5900</color>
+    <color name="nexo_warning_container">#FFDF9B</color>
+
+    <color name="nexo_scrim">#66000000</color>
+    <color name="nexo_chip_offline_bg">#FFE2DE</color>
+    <color name="nexo_chip_offline_text">#8C1D18</color>
+</resources>

@@ -1,0 +1,25 @@
+# Android Studio
+.idea/
+*.iml
+.gradle/
+.kotlin/
+build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Secretos
+.env
+.env.*
+keystore.properties
+*.jks
+*.keystore
+
+# APK generados (el release final se publica en GitHub Releases)
+*.apk
+*.aab
+
+# SO
+.DS_Store
+Thumbs.db

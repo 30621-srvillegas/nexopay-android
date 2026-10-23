@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NexoPay</string>
+
+    <string name="login_title">Bienvenido a NexoPay</string>
+    <string name="login_subtitle">Tu billetera digital, rápida y segura.</string>
+    <string name="login_account">Número de cuenta</string>
+    <string name="login_password">Contraseña</string>
+    <string name="login_button">Ingresar</string>
+    <string name="login_loading">Validando credenciales…</string>
+    <string name="login_demo_title">Cuentas de demostración</string>
+    <string name="login_demo_body">Ana Torres: 10020001\nLuis Rojas: 10020002\nContraseña: Nexo#2026</string>
+    <string name="login_demo_hint">Toca la tarjeta para autocompletar la cuenta de Ana.</string>
+    <string name="login_show_password">Mostrar contraseña</string>
+    <string name="login_hide_password">Ocultar contraseña</string>
+    <string name="login_account_required">Ingresa tu número de cuenta.</string>
+    <string name="login_password_required">Ingresa tu contraseña.</string>
+    <string name="login_generic_error">No se pudo iniciar sesión. Inténtalo de nuevo.</string>
+
+    <string name="dashboard_greeting">Hola, %1$s</string>
+    <string name="dashboard_subtitle">Esto es lo que tienes disponible hoy.</string>
+    <string name="dashboard_balance_label">Saldo disponible</string>
+    <string name="dashboard_balance_loading">S/ —</string>
+    <string name="dashboard_account">Cuenta %1$s</string>
+    <string name="dashboard_status_online">En línea</string>
+    <string name="dashboard_status_offline">Desconectado</string>
+    <string name="dashboard_status_connecting">Conectando…</string>
+    <string name="dashboard_action_deposit">Depositar</string>
+    <string name="dashboard_action_withdraw">Retirar</string>
+    <string name="dashboard_action_transfer">Transferir</string>
+    <string name="dashboard_action_service">Servicios</string>
+    <string name="dashboard_history">Movimientos</string>
+    <string name="dashboard_history_empty">Aún no tienes movimientos.\nHaz tu primera operación.</string>
+    <string name="dashboard_refresh">Actualizar</string>
+    <string name="dashboard_logout">Cerrar sesión</string>
+    <string name="dashboard_logout_confirm">¿Cerrar sesión en NexoPay?</string>
+    <string name="dashboard_logout_body">Se borrarán los tokens y el historial local de este dispositivo. La cuenta y el saldo permanecen en el servidor.</string>
+    <string name="dashboard_balance_error">No se pudo actualizar el saldo.</string>
+
+    <string name="amount_sheet_deposit_title">Depositar dinero</string>
+    <string name="amount_sheet_withdraw_title">Retirar dinero</string>
+    <string name="amount_sheet_amount">Monto</string>
+    <string name="amount_sheet_currency">S/</string>
+    <string name="amount_sheet_available">Disponible: %1$s</string>
+    <string name="amount_sheet_confirm_deposit">Depositar</string>
+    <string name="amount_sheet_confirm_withdraw">Retirar</string>
+    <string name="amount_sheet_invalid">Ingresa un monto mayor a cero.</string>
+    <string name="amount_sheet_insufficient">Saldo insuficiente.</string>
+    <string name="amount_sheet_processing">Procesando…</string>
+
+    <string name="transfer_sheet_title">Transferir a otra cuenta</string>
+    <string name="transfer_sheet_destination">Cuenta destino</string>
+    <string name="transfer_sheet_amount">Monto</string>
+    <string name="transfer_sheet_confirm">Transferir</string>
+    <string name="transfer_sheet_same_account">No puedes transferirte a la misma cuenta.</string>
+    <string name="transfer_sheet_success">Transferencia enviada a %1$s.</string>
+
+    <string name="service_sheet_title">Pagar servicio</string>
+    <string name="service_sheet_code">Código de contrato</string>
+    <string name="service_sheet_amount">Monto a pagar</string>
+    <string name="service_sheet_confirm">Pagar servicio</string>
+    <string name="service_sheet_hint">Ejemplo: LUZ-001, AGUA-002, INTERNET-003</string>
+    <string name="service_sheet_success">Pago de servicio registrado.</string>
+
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_accept">Aceptar</string>
+    <string name="common_retry">Reintentar</string>
+    <string name="common_loading">Cargando…</string>
+    <string name="common_offline">Sin conexión. Revisa tu red.</string>
+    <string name="common_unexpected_error">Ocurrió un error inesperado.</string>
+    <string name="common_session_expired">Tu sesión expiró. Inicia sesión otra vez.</string>
+
+    <string name="tx_deposit">Depósito</string>
+    <string name="tx_withdraw">Retiro</string>
+    <string name="tx_transfer_in">Transferencia recibida</string>
+    <string name="tx_transfer_out">Transferencia enviada</string>
+    <string name="tx_service">Servicio básico</string>
+    <string name="tx_unknown">Movimiento</string>
+    <string name="tx_income">+ %1$s</string>
+    <string name="tx_expense">− %1$s</string>
+
+    <string name="cd_wallet">Icono de billetera</string>
+    <string name="cd_status">Estado de conexión</string>
+    <string name="cd_history">Historial de movimientos</string>
+    <string name="cd_logout">Cerrar sesión</string>
+</resources>
