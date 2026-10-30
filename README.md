@@ -8,7 +8,6 @@ Repositorio backend: `https://github.com/30621-srvillegas/nexopay-backend`
 
 - APK release: `https://github.com/30621-srvillegas/nexopay-android/releases`
 - Backend: `https://nexopay-backend-xnr5.onrender.com`
-- Video: pendiente
 
 ## Cuentas de prueba
 
@@ -75,4 +74,4 @@ El backend debe estar levantado para las pruebas instrumentadas que usan la API 
 
 ## Autor
 
-Nombre — Curso Sistemas Distribuidos UC1 — 2026
+Stalin Roche y Steven Villegas — Aplicaciones Distribuidas UC1 — 2026
