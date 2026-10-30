@@ -1,0 +1,241 @@
+{
+  "info": {
+    "name": "NexoPay — Render — Evidencias de endpoints",
+    "description": "Ejecutar en orden. Las operaciones modifican la base de Render. Login y refresh guardan los tokens automáticamente. Cada operación nueva genera una Idempotency-Key UUID. Los nombres muestran método, endpoint y estado esperado. WebSocket se comprueba manualmente siguiendo LEEME-EVIDENCIAS.md. No ejecutar en paralelo ni repetir login innecesariamente (límite de 5 solicitudes/15 minutos).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://nexopay-backend-xnr5.onrender.com" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "wsTicket", "value": "" },
+    { "key": "depositKey", "value": "" },
+    { "key": "initialBalanceCents", "value": "" },
+    { "key": "lastBalanceCents", "value": "" }
+  ],
+  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const name = pm.info.requestName;",
+          "const expected = Number(name.match(/\\[(\\d{3})\\]/)[1]);",
+          "pm.test('Estado HTTP esperado: ' + expected, () => pm.response.to.have.status(expected));",
+          "if (expected === 204) {",
+          "  pm.test('Logout sin cuerpo', () => pm.expect(pm.response.text()).to.eql(''));",
+          "} else if (pm.response.code === expected) {",
+          "  const data = pm.response.json();",
+          "  if (expected >= 400) {",
+          "    pm.test('Error estructurado', () => pm.expect(data.error.code).to.be.a('string'));",
+          "    if (name.includes('Sin token')) pm.test('Token rechazado', () => pm.expect(data.error.code).to.eql('invalid_access_token'));",
+          "    if (name.includes('Importe inválido')) pm.test('Validación de importe', () => pm.expect(data.error.code).to.eql('validation_error'));",
+          "    if (name.includes('Sin clave')) pm.test('Clave requerida', () => pm.expect(data.error.code).to.eql('idempotency_key_invalid'));",
+          "    if (name.includes('Conflicto')) pm.test('Conflicto de idempotencia', () => pm.expect(data.error.code).to.eql('idempotency_conflict'));",
+          "    if (name.includes('Misma cuenta')) pm.test('Transferencia a sí mismo rechazada', () => pm.expect(data.error.code).to.eql('same_account'));",
+          "  } else {",
+          "    if (name.includes('/health')) pm.test('Servicio saludable', () => pm.expect(data.ok).to.eql(true));",
+          "    if (name.includes('/auth/login') || name.includes('/auth/refresh')) {",
+          "      pm.test('Tokens y cuenta recibidos', () => { pm.expect(data.accessToken).to.be.a('string').and.not.empty; pm.expect(data.refreshToken).to.be.a('string').and.not.empty; pm.expect(data.account.id).to.eql('10020001'); });",
+          "      if (typeof data.accessToken === 'string' && typeof data.refreshToken === 'string') { pm.collectionVariables.set('accessToken', data.accessToken); pm.collectionVariables.set('refreshToken', data.refreshToken); }",
+          "    }",
+          "    if (name.includes('/auth/me')) pm.test('Cuenta Ana', () => pm.expect(data.id).to.eql('10020001'));",
+          "    if (name.includes('/operations/balance')) {",
+          "      pm.test('Saldo entero no negativo', () => { pm.expect(Number.isInteger(data.balanceCents)).to.eql(true); pm.expect(data.balanceCents).to.be.at.least(0); });",
+          "      if (name.includes('Inicial')) { pm.collectionVariables.set('initialBalanceCents', data.balanceCents); pm.collectionVariables.set('lastBalanceCents', data.balanceCents); }",
+          "      if (name.includes('Final')) pm.test('Saldo final = inicial + S/ 40 (sin otros movimientos)', () => pm.expect(data.balanceCents).to.eql(Number(pm.collectionVariables.get('initialBalanceCents')) + 4000));",
+          "    }",
+          "    if (data.transaction) {",
+          "      const types = { deposit: 'DEPOSIT', withdraw: 'WITHDRAWAL', transfer: 'TRANSFER_SENT', 'pay-service': 'SERVICE_PAYMENT' };",
+          "      const operation = pm.request.url.toString().split('/').pop();",
+          "      pm.test('Tipo de movimiento correcto', () => pm.expect(data.transaction.type).to.eql(types[operation]));",
+          "      pm.test('Importe correcto', () => pm.expect(data.transaction.amountCents).to.eql(JSON.parse(pm.request.body.raw).amountCents));",
+          "      const replay = name.includes('Repetición');",
+          "      pm.test('Idempotencia esperada', () => pm.expect(data.idempotentReplay).to.eql(replay));",
+          "      const previous = Number(pm.collectionVariables.get('lastBalanceCents'));",
+          "      const delta = replay ? 0 : (operation === 'deposit' ? 1 : -1) * data.transaction.amountCents;",
+          "      pm.test('Cambio de saldo correcto (sin otros movimientos)', () => pm.expect(data.balanceCents).to.eql(previous + delta));",
+          "      pm.collectionVariables.set('lastBalanceCents', data.balanceCents);",
+          "    }",
+          "    if (name.includes('/operations/transactions')) pm.test('Historial recibido', () => { pm.expect(data.transactions).to.be.an('array'); pm.expect(data.transactions.length).to.be.at.least(4); });",
+          "    if (name.includes('/realtime/ticket')) { pm.test('Ticket recibido', () => { pm.expect(data.ticket).to.be.a('string').and.not.empty; pm.expect(data.expiresInSeconds).to.eql(30); }); pm.collectionVariables.set('wsTicket', data.ticket); }",
+          "  }",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 — Estado y autenticación",
+      "item": [
+        {
+          "name": "01 [200] GET /health — Estado del backend",
+          "request": { "method": "GET", "auth": { "type": "noauth" }, "url": "{{baseUrl}}/health", "description": "Despierta Render y comprueba que ok sea true. Sin cuerpo ni autenticación." }
+        },
+        {
+          "name": "02 [200] POST /api/v1/auth/login — Login Ana",
+          "request": {
+            "method": "POST", "auth": { "type": "noauth" }, "url": "{{baseUrl}}/api/v1/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"accountId\": \"10020001\",\n  \"password\": \"Nexo#2026\"\n}", "options": { "raw": { "language": "json" } } },
+            "description": "Guarda automáticamente accessToken y refreshToken en la colección. Evitar repetir: límite 5 solicitudes/15 min."
+          }
+        },
+        {
+          "name": "03 [200] GET /api/v1/auth/me — Datos de Ana",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/auth/me" }
+        },
+        {
+          "name": "04 [200] GET /api/v1/operations/balance — Inicial",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/operations/balance", "description": "Guarda el saldo inicial para comparar las operaciones posteriores." }
+        }
+      ]
+    },
+    {
+      "name": "02 — Operaciones e historial (modifican saldo)",
+      "item": [
+        {
+          "name": "05 [200] POST /api/v1/operations/deposit — Depósito S/ 100",
+          "event": [{ "listen": "prerequest", "script": { "type": "text/javascript", "exec": ["pm.collectionVariables.set('depositKey', pm.variables.replaceIn('{{$guid}}'));"] } }],
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/api/v1/operations/deposit",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "{{depositKey}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"amountCents\": 10000\n}", "options": { "raw": { "language": "json" } } },
+            "description": "Cada Send genera una clave nueva y un depósito nuevo. Usa la request Repetición para comprobar un reintento sin nuevo abono."
+          }
+        },
+        {
+          "name": "06 [200] POST /api/v1/operations/deposit — Repetición sin doble abono",
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/api/v1/operations/deposit",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "{{depositKey}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"amountCents\": 10000\n}", "options": { "raw": { "language": "json" } } },
+            "description": "Reutiliza exactamente la clave y el JSON de 05. Esperado: idempotentReplay true y mismo saldo. Ejecutar inmediatamente después de 05."
+          }
+        },
+        {
+          "name": "07 [200] POST /api/v1/operations/withdraw — Retiro S/ 20",
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/api/v1/operations/withdraw",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "{{$guid}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"amountCents\": 2000\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "08 [200] POST /api/v1/operations/transfer — Ana envía S/ 25 a Luis",
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/api/v1/operations/transfer",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "{{$guid}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"toAccountId\": \"10020002\",\n  \"amountCents\": 2500\n}", "options": { "raw": { "language": "json" } } },
+            "description": "Para evidencia en tiempo real, abrir la app con Luis (10020002) conectada a Render antes de enviar."
+          }
+        },
+        {
+          "name": "09 [200] POST /api/v1/operations/pay-service — Pago Luz S/ 15",
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/api/v1/operations/pay-service",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "{{$guid}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"contractCode\": \"LUZ-001\",\n  \"amountCents\": 1500\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "10 [200] GET /api/v1/operations/balance — Final",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/operations/balance", "description": "Debe ser el inicial + 4000 centavos si se ejecutaron las operaciones en orden, una vez y sin movimientos externos." }
+        },
+        {
+          "name": "11 [200] GET /api/v1/operations/transactions?limit=10 — Historial",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/operations/transactions?limit=10" }
+        }
+      ]
+    },
+    {
+      "name": "03 — Tiempo real (WebSocket manual en guía)",
+      "item": [
+        {
+          "name": "12 [200] POST /api/v1/realtime/ticket — Ticket para GET /ws",
+          "request": { "method": "POST", "url": "{{baseUrl}}/api/v1/realtime/ticket", "description": "Sin body ni Content-Type. Guarda wsTicket. Conectar antes de 30 segundos a wss://nexopay-backend-xnr5.onrender.com/ws?ticket=VALOR. Usar New > WebSocket; no es una petición HTTP normal. Ticket de un solo uso." }
+        }
+      ]
+    },
+    {
+      "name": "04 — Renovación y errores controlados",
+      "item": [
+        {
+          "name": "13 [200] POST /api/v1/auth/refresh — Renovar tokens",
+          "request": {
+            "method": "POST", "auth": { "type": "noauth" }, "url": "{{baseUrl}}/api/v1/auth/refresh",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "description": "Reemplaza automáticamente ambos tokens por los renovados. No reutilizar el refresh anterior."
+          }
+        },
+        {
+          "name": "14 [200] GET /api/v1/auth/me — Verificar token renovado",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/auth/me" }
+        },
+        {
+          "name": "15 [401] GET /api/v1/auth/me — Sin token",
+          "request": { "method": "GET", "auth": { "type": "noauth" }, "url": "{{baseUrl}}/api/v1/auth/me" }
+        },
+        {
+          "name": "16 [422] POST /api/v1/operations/deposit — Importe inválido",
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/api/v1/operations/deposit",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "{{$guid}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"amountCents\": -100\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "17 [422] POST /api/v1/operations/deposit — Sin clave de idempotencia",
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/api/v1/operations/deposit",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"amountCents\": 100\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "18 [409] POST /api/v1/operations/deposit — Conflicto de clave",
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/api/v1/operations/deposit",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "{{depositKey}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"amountCents\": 20000\n}", "options": { "raw": { "language": "json" } } },
+            "description": "Necesita haber ejecutado 05 antes: misma clave con importe distinto, sin realizar otro depósito."
+          }
+        },
+        {
+          "name": "19 [422] POST /api/v1/operations/transfer — Misma cuenta",
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/api/v1/operations/transfer",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Idempotency-Key", "value": "{{$guid}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"toAccountId\": \"10020001\",\n  \"amountCents\": 100\n}", "options": { "raw": { "language": "json" } } }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 — Cierre de sesión (ejecutar al final)",
+      "item": [
+        {
+          "name": "20 [204] POST /api/v1/auth/logout — Cerrar sesión",
+          "request": {
+            "method": "POST", "auth": { "type": "noauth" }, "url": "{{baseUrl}}/api/v1/auth/logout",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "description": "204 sin JSON es correcto. Revoca la familia de refresh; el access token puede seguir válido hasta expirar."
+          }
+        },
+        {
+          "name": "21 [401] POST /api/v1/auth/refresh — Sesión revocada",
+          "request": {
+            "method": "POST", "auth": { "type": "noauth" }, "url": "{{baseUrl}}/api/v1/auth/refresh",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "description": "Debe rechazar la renovación tras logout. Para empezar otra sesión, ejecutar login de nuevo."
+          }
+        }
+      ]
+    }
+  ]
+}

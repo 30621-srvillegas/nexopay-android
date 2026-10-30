@@ -13,8 +13,20 @@ import com.uc1.nexopay.data.local.TransactionType
 import com.uc1.nexopay.databinding.ItemTransactionBinding
 import com.uc1.nexopay.ui.common.UiUtils
 
-class TransactionAdapter :
+class TransactionAdapter(private val expandedDetails: Boolean = false) :
     ListAdapter<TransactionEntity, TransactionAdapter.TransactionViewHolder>(DIFF) {
+
+    var onNewFirstItem: (() -> Unit)? = null
+
+    override fun onCurrentListChanged(
+        previousList: List<TransactionEntity>,
+        currentList: List<TransactionEntity>
+    ) {
+        super.onCurrentListChanged(previousList, currentList)
+        val first = currentList.firstOrNull() ?: return
+        // Las actualizaciones de saldo o de un comprobante existente no desplazan la lista.
+        if (previousList.none { it.id == first.id }) onNewFirstItem?.invoke()
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -25,6 +37,10 @@ class TransactionAdapter :
             parent,
             false
         )
+        if (expandedDetails) {
+            binding.textTitle.maxLines = 2
+            binding.textSubtitle.maxLines = 3
+        }
         return TransactionViewHolder(binding)
     }
 

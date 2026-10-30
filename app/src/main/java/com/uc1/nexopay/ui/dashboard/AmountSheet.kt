@@ -5,16 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.uc1.nexopay.R
 import com.uc1.nexopay.databinding.SheetAmountBinding
 import com.uc1.nexopay.ui.common.UiUtils
 
-class AmountSheet : BottomSheetDialogFragment() {
+class AmountSheet : WalletSheet() {
 
     enum class Mode { DEPOSIT, WITHDRAW }
 
@@ -41,7 +37,7 @@ class AmountSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.textTitle.setText(
+        binding.header.textTitle.setText(
             if (mode == Mode.DEPOSIT) {
                 R.string.amount_sheet_deposit_title
             } else {
@@ -56,26 +52,21 @@ class AmountSheet : BottomSheetDialogFragment() {
             }
         )
 
-        binding.textAvailable.isVisible = mode == Mode.WITHDRAW
+        binding.header.imageIcon.setImageResource(
+            if (mode == Mode.DEPOSIT) R.drawable.ic_deposit else R.drawable.ic_withdraw
+        )
+        binding.header.textDescription.setText(R.string.sheet_amount_description)
         binding.textAvailable.text = getString(
             R.string.amount_sheet_available,
             UiUtils.formatCents(balanceCents)
         )
 
         binding.inputAmount.doAfterTextChanged {
-            binding.textError.isVisible = false
+            binding.inputLayoutAmount.error = null
         }
 
         binding.buttonCancel.setOnClickListener { dismiss() }
         binding.buttonConfirm.setOnClickListener { submit() }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        (dialog as? BottomSheetDialog)?.behavior?.apply {
-            state = BottomSheetBehavior.STATE_EXPANDED
-            skipCollapsed = true
-        }
     }
 
     private fun submit() {
@@ -85,17 +76,14 @@ class AmountSheet : BottomSheetDialogFragment() {
 
         val error = when {
             cents == null -> getString(R.string.amount_sheet_invalid)
-            cents > MAX_AMOUNT_CENTS -> "El monto máximo es S/ 100,000.00."
+            cents > MAX_AMOUNT_CENTS -> getString(R.string.amount_sheet_maximum)
             mode == Mode.WITHDRAW && cents > balanceCents ->
                 getString(R.string.amount_sheet_insufficient)
             else -> null
         }
 
-        if (error != null) {
-            binding.textError.text = error
-            binding.textError.isVisible = true
-            return
-        }
+        binding.inputLayoutAmount.error = error
+        if (error != null) return
 
         onConfirm?.invoke(cents!!)
         dismiss()

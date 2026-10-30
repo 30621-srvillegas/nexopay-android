@@ -7,9 +7,9 @@ import org.junit.Test
 class UiUtilsTest {
 
     @Test
-    fun formatsCentsAsSoles() {
-        assertEquals("S/ 1,500.00", UiUtils.formatCents(150_000))
-        assertEquals("S/ 0.05", UiUtils.formatCents(5))
+    fun formatsCentsWithDollarSymbolWithoutConvertingValue() {
+        assertEquals("\$ 1,500.00", UiUtils.formatCents(150_000))
+        assertEquals("\$ 0.05", UiUtils.formatCents(5))
     }
 
     @Test
@@ -17,6 +17,7 @@ class UiUtilsTest {
         assertEquals(123_456L, UiUtils.parseAmountToCents("1,234.56"))
         assertEquals(123_456L, UiUtils.parseAmountToCents("1.234,56"))
         assertEquals(2_550L, UiUtils.parseAmountToCents("S/ 25,50"))
+        assertEquals(2_550L, UiUtils.parseAmountToCents("\$ 25,50"))
         assertEquals(101L, UiUtils.parseAmountToCents("1.005"))
     }
 

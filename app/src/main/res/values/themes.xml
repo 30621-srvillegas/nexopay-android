@@ -17,6 +17,8 @@
         <item name="colorOutline">@color/nexo_outline</item>
         <item name="colorError">@color/nexo_danger</item>
         <item name="colorOnError">@color/nexo_on_primary</item>
+        <item name="textInputStyle">@style/Widget.NexoPay.Input</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.NexoPay.AlertDialog</item>
         <item name="android:colorBackground">@color/nexo_background</item>
         <item name="android:windowBackground">@color/nexo_background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>

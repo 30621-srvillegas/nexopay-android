@@ -5,16 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.uc1.nexopay.R
 import com.uc1.nexopay.databinding.SheetTransferBinding
 import com.uc1.nexopay.ui.common.UiUtils
 
-class TransferSheet : BottomSheetDialogFragment() {
+class TransferSheet : WalletSheet() {
 
     private var _binding: SheetTransferBinding? = null
     private val binding get() = _binding!!
@@ -39,28 +35,24 @@ class TransferSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.header.textTitle.setText(R.string.transfer_sheet_title)
+        binding.header.textDescription.setText(R.string.sheet_transfer_description)
+        binding.header.imageIcon.setImageResource(R.drawable.ic_transfer)
+
         binding.textAvailable.text = getString(
             R.string.amount_sheet_available,
             UiUtils.formatCents(balanceCents)
         )
 
         binding.inputDestination.doAfterTextChanged {
-            binding.textError.isVisible = false
+            binding.inputLayoutDestination.error = null
         }
         binding.inputAmount.doAfterTextChanged {
-            binding.textError.isVisible = false
+            binding.inputLayoutAmount.error = null
         }
 
         binding.buttonCancel.setOnClickListener { dismiss() }
         binding.buttonConfirm.setOnClickListener { submit() }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        (dialog as? BottomSheetDialog)?.behavior?.apply {
-            state = BottomSheetBehavior.STATE_EXPANDED
-            skipCollapsed = true
-        }
     }
 
     private fun submit() {
@@ -69,22 +61,23 @@ class TransferSheet : BottomSheetDialogFragment() {
             binding.inputAmount.text?.toString().orEmpty()
         )
 
-        val error = when {
+        val destinationError = when {
             !destination.matches(Regex("^\\d{8}$")) ->
                 "La cuenta destino debe tener exactamente 8 dígitos."
             destination == ownAccountId ->
                 getString(R.string.transfer_sheet_same_account)
+            else -> null
+        }
+        val amountError = when {
             cents == null -> getString(R.string.amount_sheet_invalid)
-            cents > MAX_AMOUNT_CENTS -> "El monto máximo es S/ 100,000.00."
+            cents > MAX_AMOUNT_CENTS -> getString(R.string.amount_sheet_maximum)
             cents > balanceCents -> getString(R.string.amount_sheet_insufficient)
             else -> null
         }
 
-        if (error != null) {
-            binding.textError.text = error
-            binding.textError.isVisible = true
-            return
-        }
+        binding.inputLayoutDestination.error = destinationError
+        binding.inputLayoutAmount.error = amountError
+        if (destinationError != null || amountError != null) return
 
         onConfirm?.invoke(destination, cents!!)
         dismiss()

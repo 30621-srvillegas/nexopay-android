@@ -13,14 +13,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.DefaultItemAnimator
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.uc1.nexopay.NexoPayApp
 import com.uc1.nexopay.R
 import com.uc1.nexopay.data.remote.SocketStatus
 import com.uc1.nexopay.databinding.ActivityDashboardBinding
 import com.uc1.nexopay.ui.common.NexoViewModelFactory
 import com.uc1.nexopay.ui.common.UiUtils
+import com.uc1.nexopay.ui.common.UiNotice
 import com.uc1.nexopay.ui.login.LoginActivity
 import kotlinx.coroutines.launch
 
@@ -54,6 +55,14 @@ class DashboardActivity : AppCompatActivity() {
 
         binding.recyclerTransactions.layoutManager = LinearLayoutManager(this)
         binding.recyclerTransactions.adapter = adapter
+        binding.recyclerTransactions.itemAnimator = DefaultItemAnimator().apply {
+            addDuration = 220
+            moveDuration = 220
+            supportsChangeAnimations = false
+        }
+        adapter.onNewFirstItem = {
+            binding.recyclerTransactions.scrollToPosition(0)
+        }
 
         binding.buttonDeposit.setOnClickListener {
             showAmountSheet(AmountSheet.Mode.DEPOSIT)
@@ -64,6 +73,11 @@ class DashboardActivity : AppCompatActivity() {
         binding.buttonTransfer.setOnClickListener { showTransferSheet() }
         binding.buttonService.setOnClickListener { showServiceSheet() }
         binding.buttonRefresh.setOnClickListener { viewModel.refresh() }
+        binding.buttonViewAll.setOnClickListener {
+            if (supportFragmentManager.findFragmentByTag(HistoryFragment.TAG) == null) {
+                HistoryFragment().show(supportFragmentManager, HistoryFragment.TAG)
+            }
+        }
         binding.buttonLogout.setOnClickListener { confirmLogout() }
 
         observe()
@@ -125,7 +139,7 @@ class DashboardActivity : AppCompatActivity() {
         state.error?.let { message ->
             if (message != lastError) {
                 lastError = message
-                Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+                UiNotice.show(noticeRoot(), message)
                 viewModel.clearError()
             }
         } ?: run {
@@ -164,7 +178,7 @@ class DashboardActivity : AppCompatActivity() {
     private fun handleEvent(event: DashboardEvent) {
         when (event) {
             is DashboardEvent.Message -> {
-                Snackbar.make(binding.root, event.text, Snackbar.LENGTH_LONG).show()
+                UiNotice.show(noticeRoot(), event.text, success = true)
             }
             DashboardEvent.SessionExpired -> navigateToLogin()
         }
@@ -181,6 +195,9 @@ class DashboardActivity : AppCompatActivity() {
         }
         sheet.show(supportFragmentManager, "amount_sheet")
     }
+
+    private fun noticeRoot() =
+        supportFragmentManager.findFragmentByTag(HistoryFragment.TAG)?.view ?: binding.root
 
     private fun showTransferSheet() {
         val state = viewModel.state.value
@@ -204,6 +221,7 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun confirmLogout() {
         MaterialAlertDialogBuilder(this)
+            .setIcon(R.drawable.ic_logout)
             .setTitle(R.string.dashboard_logout_confirm)
             .setMessage(R.string.dashboard_logout_body)
             .setNegativeButton(R.string.common_cancel, null)

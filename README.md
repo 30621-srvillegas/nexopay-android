@@ -52,7 +52,16 @@ Android <- WSS (ticket de un solo uso) <- Fastify
 .\gradlew.bat assembleProdRelease
 ```
 
-El flavor `prod` requiere reemplazar `https://nexopay-backend-xnr5.onrender.com` por la URL real del backend en `app/build.gradle.kts` antes de generar el APK final.
+El flavor `prod` ya utiliza el backend de Render indicado arriba. Para generar una release firmada, configura localmente `keystore.properties` y el archivo de firma; estos archivos no se versionan.
+
+## Documentación y comprobación de endpoints
+
+- [Render, bases de datos y diagnóstico de saldos](docs/exposicion/01-RENDER-BASES-DE-DATOS-Y-SALDOS.md).
+- [Explicación sencilla del código](docs/exposicion/02-EXPLICACION-SENCILLA-DEL-CODIGO.md).
+- [Seguridad implementada](docs/exposicion/03-SEGURIDAD-IMPLEMENTADA.md).
+- [Guion de exposición de máximo 15 minutos](docs/exposicion/04-GUION-DE-EXPOSICION-15-MINUTOS.md).
+- [Colección de Postman para Render](postman/NexoPay-Render.postman_collection.json) e [instrucciones de ejecución y capturas](postman/LEEME-EVIDENCIAS.md).
+- [Guía original de construcción del proyecto](GUIA-PROYECTO-BILLETERA-V2.md), como material de referencia; los documentos de exposición describen los ajustes de la versión actual.
 
 ## Probar
 

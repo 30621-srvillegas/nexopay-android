@@ -24,13 +24,14 @@ object UiUtils {
     @Synchronized
     fun formatCents(cents: Long): String {
         val value = BigDecimal.valueOf(cents, 2)
-        return "S/ ${moneyFormat.format(value)}"
+        return "\$ ${moneyFormat.format(value)}"
     }
 
     fun parseAmountToCents(raw: String): Long? {
         val cleaned = raw
             .trim()
             .replace("S/", "", ignoreCase = true)
+            .replace("$", "")
             .replace(" ", "")
         if (cleaned.isEmpty()) return null
 

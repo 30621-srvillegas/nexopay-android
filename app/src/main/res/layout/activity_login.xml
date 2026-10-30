@@ -4,9 +4,10 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/nexo_background">
+    android:background="@drawable/bg_login">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollLogin"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -14,19 +15,20 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             android:orientation="vertical"
             android:paddingStart="24dp"
-            android:paddingTop="40dp"
+            android:paddingTop="28dp"
             android:paddingEnd="24dp"
-            android:paddingBottom="32dp">
+            android:paddingBottom="28dp">
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="88dp"
                 android:layout_height="88dp"
                 app:cardBackgroundColor="@color/nexo_primary_container"
                 app:cardCornerRadius="28dp"
-                app:cardElevation="0dp">
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="44dp"
@@ -41,6 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                android:gravity="center"
                 android:text="@string/login_title"
                 android:textColor="@color/nexo_on_surface"
                 android:textSize="28sp"
@@ -55,12 +58,37 @@
                 android:textColor="@color/nexo_on_surface_variant"
                 android:textSize="14sp" />
 
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                app:cardBackgroundColor="@color/nexo_card"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/nexo_surface_variant"
+                app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/login_form_title"
+                android:textColor="@color/nexo_on_surface"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inputLayoutAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:hint="@string/login_account">
+                android:layout_marginTop="20dp"
+                android:hint="@string/login_account"
+                app:startIconDrawable="@drawable/ic_wallet">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/inputAccount"
@@ -79,6 +107,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:hint="@string/login_password"
+                app:startIconDrawable="@drawable/ic_lock"
                 app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -94,6 +123,7 @@
 
             <TextView
                 android:id="@+id/textError"
+                android:accessibilityLiveRegion="polite"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -107,59 +137,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/login_button" />
+                android:text="@string/login_button"
+                app:icon="@drawable/ic_lock"
+                app:iconGravity="textStart"
+                app:iconSize="18dp" />
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/progressLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 android:indeterminateTint="@color/nexo_primary"
                 android:visibility="gone" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardDemo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground"
-                app:cardBackgroundColor="@color/nexo_secondary_container"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/login_demo_title"
-                        android:textColor="@color/nexo_on_secondary_container"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="@string/login_demo_body"
-                        android:textColor="@color/nexo_on_secondary_container"
-                        android:textSize="13sp" />
-                </LinearLayout>
+            </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="@string/login_demo_hint"
+                android:gravity="center"
+                android:text="@string/login_footer"
                 android:textColor="@color/nexo_on_surface_variant"
-                android:textSize="11sp" />
+                android:textSize="12sp" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </FrameLayout>

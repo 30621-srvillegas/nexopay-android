@@ -22,7 +22,7 @@ class WalletRepository(
 
     private val dao = database.transactionDao()
 
-    val transactions: Flow<List<TransactionEntity>> = dao.observeRecent()
+    val transactions: Flow<List<TransactionEntity>> = dao.observeAll()
 
     suspend fun login(accountId: String, password: String): Result<LoginResponse> =
         call { api.login(LoginRequest(accountId.trim(), password)) }

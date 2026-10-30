@@ -62,6 +62,8 @@
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@id/textAmount"
             app:layout_constraintStart_toStartOf="@id/textTitle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0"
             app:layout_constraintTop_toBottomOf="@id/textTitle" />
 
         <TextView
